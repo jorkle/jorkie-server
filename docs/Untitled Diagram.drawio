@@ -134,8 +134,8 @@
         <mxCell id="knBb_DPXkGFCcCnxjEH9-54" value="CommandOpts() creation" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="knBb_DPXkGFCcCnxjEH9-45">
           <mxGeometry x="40" y="50" width="200" height="200" as="geometry" />
         </mxCell>
-        <mxCell id="knBb_DPXkGFCcCnxjEH9-55" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="knBb_DPXkGFCcCnxjEH9-54">
-          <mxGeometry x="10" y="40" width="120" height="60" as="geometry" />
+        <mxCell id="knBb_DPXkGFCcCnxjEH9-55" value="&lt;div&gt;self.__parse_args()&lt;/div&gt;&lt;div&gt;is called&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="knBb_DPXkGFCcCnxjEH9-54">
+          <mxGeometry x="10" y="40" width="180" height="30" as="geometry" />
         </mxCell>
         <mxCell id="knBb_DPXkGFCcCnxjEH9-46" style="edgeStyle=elbowEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;elbow=vertical;html=1;entryX=0.487;entryY=-0.002;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="knBb_DPXkGFCcCnxjEH9-39" target="knBb_DPXkGFCcCnxjEH9-45">
           <mxGeometry relative="1" as="geometry" />
