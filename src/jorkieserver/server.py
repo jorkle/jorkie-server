@@ -4,11 +4,12 @@ import sys
 import argparse
 
 from jorkieserver.types import CommandOptions, Configuration, Components, Log
-
+from jorkieserver.logging import Log
 from jorkieserver.constants import (
     APPLICATION_NAME,
     APPLICATION_DESCRIPTION,
     APPLICATION_USAGE,
+    DEFAULT_LOG_DIR,
     DEFAULT_LOG_LEVEL,
     DEFAULT_LOG_FILE,
     DEFAULT_CONFIG_FILE,
@@ -83,11 +84,7 @@ class Server:
 
         args = parser.parse_args()
 
-        cmd_opts = CommandOptions(
-            args["log_level"],  # pyright: ignore
-            args["log_file"],  # pyright: ignore
-            args["config_file"],  # pyright: ignore
-        )
+        cmd_opts = CommandOptions(args.log_level, args.log_file, args.config_file)
 
         return cmd_opts
 
@@ -108,13 +105,16 @@ class Server:
         Returns:
             Log: Log object that can be used for logging.
         """
-        return Log()  # TODO: Implement logging functionality
+        logger = Log(self.cmd_opts.log_level, self.cmd_opts.log_file, DEFAULT_LOG_DIR)
+        logger.debug("Logging initialized", "MAIN")
+        return logger
 
     def __init_components(self) -> Components:
         """
         Initialize the asynchranous sub-components.
 
         Returns:
+        --------
             Components: Components object that contains the initialized components.
         """
         return Components()  # TODO: Implement component initialization functionality
