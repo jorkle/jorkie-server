@@ -127,7 +127,7 @@ class LogWriter:
             component (str): The component that called `critical()` function
         """
         if self.level <= 3:
-            message = f"CRITICAL: [COMPONENT: {component}] {message}"
+            message = f"CRITICAL: [COMPONENT: {component}] {message} - Exiting."
             print(message, file=sys.stderr)
             self.logger.critical(message)
             sys.exit(1)

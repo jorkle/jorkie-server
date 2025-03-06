@@ -21,6 +21,24 @@ def file_exists(file_path: str) -> bool:
         return False
 
 
+def file_writable(file_path: str) -> bool:
+    """Determines if the file location `file_path` is writable.
+
+    Args:
+    -----
+        file_path (str): The file path to check for writability.
+
+    Returns:
+    --------
+        bool: True if the file is writable, false otherwise.
+    """
+    try:
+        with open(file_path, "a"):
+            return True
+    except Exception:
+        return False
+
+
 def get_file_contents(file_path: str) -> str | bool:
     """Reads the contents of the file at the given path.
     Returns the contnets of the file if it exists, otherwise returns False.
