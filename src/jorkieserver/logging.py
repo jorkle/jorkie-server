@@ -1,12 +1,11 @@
 import logging
 import sys
-import os
-import base64
 from logging import Logger
-import binascii
+
+from jorkieserver.utils import base64_encode, create_directory
 
 
-class Log:
+class LogWriter:
     """
     Contains several merthods to log messages at different log levels.
     """
@@ -14,7 +13,7 @@ class Log:
     def __init__(self, log_level: int, log_file: str, log_dir: str) -> None:
         self.level = log_level
         self.file = log_file
-        self.__dir = self.__create_dir(log_dir)
+        self.__log_dir = create_directory(log_dir, "LOGGING")
         self.logger = self.__init_logger()
 
     def __init_logger(self) -> Logger:
@@ -62,7 +61,7 @@ class Log:
                 file=sys.stderr,
             )
             print(
-                f"FATAL: [COMPONENT: LOGGING] Exception Details (base64 encoded): {self.__base64_encode(str(e))}",
+                f"FATAL: [COMPONENT: LOGGING] Exception Details (base64 encoded): {base64_encode(str(e), "LOGGING")}",
                 file=sys.stderr,
             )
             print(
@@ -71,114 +70,6 @@ class Log:
             sys.exit(1)
 
         return logging.getLogger()
-
-    def __base64_encode(self, data: str) -> str:
-        """
-        Transforms a string (`data`) into a base64 encoded string
-
-        Args:
-        -----
-            data (str): Input string to be base64 encoded
-
-        Raises:
-        -------
-            UnicodeEncodeError: If the string cannot be encoded to bytes
-            binascii.Error: If the bytes cannot be encoded to base64
-            UnicodeDecodeError: If the base64 bytes cannot be decoded to string
-            Exception: If an unknown error occurs
-
-        Returns:
-        --------
-            str: base64 encoded string
-        """
-        try:
-            string_bytes = data.encode("utf-8")
-            base64_bytes = base64.b64encode(string_bytes)
-            base64_string = base64_bytes.decode("utf-8")
-        except UnicodeEncodeError:
-            print(
-                "CRITICAL: [COMPONENT: LOGGING] Failed to encode the string to bytes.",
-                file=sys.stderr,
-            )
-            sys.exit(1)
-        except binascii.Error:
-            print(
-                "CRITICAL: [COMPONENT: LOGGING] Failed to encode bytes to base64.",
-                file=sys.stderr,
-            )
-            sys.exit(1)
-        except UnicodeDecodeError:
-            print(
-                "CRITICAL: [COMPONENT: LOGGING] Failed to decode base64 bytes to string.",
-                file=sys.stderr,
-            )
-            sys.exit(1)
-        except Exception as e:
-            print(
-                "CRIITCAL: [COMPONENT: LOGGING] An unknown exception has occurred while encoding the string to base64.",
-                file=sys.stderr,
-            )
-            print(
-                f"CRIITCAL: [COMPONENT: LOGGING] Exception Details: {e}",
-                file=sys.stderr,
-            )
-            print(
-                "CRIITCAL: [COMPONENT: LOGGING] Consider opening a GitHub issue with the above details.",
-                file=sys.stderr,
-            )
-            sys.exit(1)
-
-        return base64_string
-
-    def __create_dir(self, dir: str) -> str:
-        """
-        Creates a directory if it does not exist.
-
-        Args:
-        -----
-            dir (str): path to the directory to be created
-
-        Raises:
-        -------
-            PermissionError: If the user does not have permission to create the directory
-            OSError: If the directory cannot be created
-            Exception: If an unexpected error occurs
-
-        Returns:
-        --------
-            str: The directory path that was created
-        """
-        try:
-            if not os.path.exists(dir):
-                os.makedirs(dir)
-
-        except PermissionError:
-            print(
-                f"CRITICAL: [COMPONENT: LOGGING] Insufficient permissions to create directory '{self.__dir}'.",
-                file=sys.stderr,
-            )
-            sys.exit(1)
-        except OSError:
-            print(
-                f"CRITICAL: [COMPONENT: LOGGING] OS error occurred while creating directory '{self.__dir}'.",
-                file=sys.stderr,
-            )
-            sys.exit(1)
-        except Exception as e:
-            print(
-                f"CRITICAL: [COMPONENT: LOGGING] Unexpected error occurred while creating directory '{self.__dir}'.",
-                file=sys.stderr,
-            )
-            print(
-                f"CRITICAL: [COMPONENT: LOGGING] Exception information (base64 encoded): {self.__base64_encode(str(e))}",
-                file=sys.stderr,
-            )
-            print(
-                "CRIITCAL: [COMPONENT: LOGGING] Consider opening a GitHub issue with the above details.",
-                file=sys.stderr,
-            )
-            sys.exit(1)
-        return dir
 
     def debug(self, message: str, component: str) -> None:
         """Verifies that the log level is equal to 0 (DEBUG).

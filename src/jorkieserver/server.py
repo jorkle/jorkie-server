@@ -3,8 +3,8 @@
 import sys
 import argparse
 
-from jorkieserver.types import CommandOptions, Configuration, Components, Log
-from jorkieserver.logging import Log
+from jorkieserver.types import CommandOptions, Configuration, Components
+from jorkieserver.logging import LogWriter
 from jorkieserver.constants import (
     APPLICATION_NAME,
     APPLICATION_DESCRIPTION,
@@ -34,23 +34,17 @@ class Server:
 
         self.cmd_opts = self.__parse_args()
         self.config = self.__load_config()
-        self.log = self.__init_logging()
+        self.log_writer = self.__init_logging()
         self.components = self.__init_components()
 
     def __parse_args(self) -> CommandOptions:
-        """
-        Parse command line arguments and return a CommandOptions object.
-
-        Returns:
-            CommandOptions: Parsed command line options.
-        """
-        parser = argparse.ArgumentParser(
+        cli_arg_parser = argparse.ArgumentParser(
             prog=APPLICATION_NAME,
             usage=APPLICATION_USAGE,
             description=APPLICATION_DESCRIPTION,
         )
 
-        parser.add_argument(
+        cli_arg_parser.add_argument(
             "--log-level",
             "-ll",
             default=DEFAULT_LOG_LEVEL,
@@ -62,7 +56,7 @@ class Server:
             dest="log_level",
         )
 
-        parser.add_argument(
+        cli_arg_parser.add_argument(
             "--log-file",
             "-lf",
             default=DEFAULT_LOG_FILE,
@@ -72,7 +66,7 @@ class Server:
             dest="log_file",
         )
 
-        parser.add_argument(
+        cli_arg_parser.add_argument(
             "--config",
             "-c",
             default=DEFAULT_CONFIG_FILE,
@@ -82,44 +76,34 @@ class Server:
             dest="config_file",
         )
 
-        args = parser.parse_args()
+        parsed_cli_args = cli_arg_parser.parse_args()
 
-        cmd_opts = CommandOptions(args.log_level, args.log_file, args.config_file)
+        cli_args = CommandOptions(
+            parsed_cli_args.log_level,
+            parsed_cli_args.log_file,
+            parsed_cli_args.config_file,
+        )
 
-        return cmd_opts
+        return cli_args
 
     def __load_config(self) -> Configuration:
-        """
-        Load configuration from a file or initialize default configuration.
-
-        Returns:
-            Configuration: Configuration Object containing the configuration.
-        """
-
         return Configuration()  # TODO: Implement configuration functionality
 
-    def __init_logging(self) -> Log:
-        """
-        Initialize logging.
-
-        Returns:
-            Log: Log object that can be used for logging.
-        """
-        logger = Log(self.cmd_opts.log_level, self.cmd_opts.log_file, DEFAULT_LOG_DIR)
-        logger.debug("Logging initialized", "MAIN")
-        return logger
+    def __init_logging(self) -> LogWriter:
+        log_writer = LogWriter(
+            self.cmd_opts.log_level, self.cmd_opts.log_file, DEFAULT_LOG_DIR
+        )
+        log_writer.debug("Logging initialized", "MAIN")
+        return log_writer
 
     def __init_components(self) -> Components:
-        """
-        Initialize the asynchranous sub-components.
-
-        Returns:
-        --------
-            Components: Components object that contains the initialized components.
-        """
         return Components()  # TODO: Implement component initialization functionality
 
 
-def run() -> None:
-    server = Server()
+def main() -> None:
+    Server()
     sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()
