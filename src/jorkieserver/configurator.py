@@ -1,4 +1,6 @@
 from jorkieserver.utils import file_exists, file_writable, get_file_contents
+from jorkieserver.constants import LATEST_CONFIG_VERSION
+from jorkieserver.logging import LogWriter
 
 
 class Configuration:
@@ -44,7 +46,9 @@ class Configurator:
 
         if config_file_exists:
             self.__log_writer.debug("Config file exists.", component="CONFIGURATOR")
-            config_file_contents = get_file_contents(config_file_path)
+            config_file_contents: str = get_file_contents(
+                config_file_path, log_writer=self.__log_writer
+            )
 
             config_is_valid: bool = self.__validate_config(config_file_contents)
             if config_is_valid:
@@ -52,7 +56,7 @@ class Configurator:
                     "Config file is valid.", component="CONFIGURATOR"
                 )
                 # Get version of config
-                config_version = self.__get_config_version(config_file_contents)
+                config_version: str = self.__get_config_version(config_file_contents)
                 if config_version == LATEST_CONFIG_VERSION:
                     self.__log_writer.debug(
                         "Config file is of the latest version.",
@@ -80,8 +84,31 @@ class Configurator:
 
                 # Prompt user to regenerate the configuration file. if user agrees, generate default config.
                 # If user doesn't agree or 30 second timeout occurrs, log critical error and exit.
-                self.__prompt_user_regenerate_config(config_file_path)
+                question: str = """Config file exists, but is not valid.
+                Do you want the current configuration file ({config_file_path}) regenerated?"""
+                prompt_user_yes_no(questin=question, timeout=30)
 
         else:
             # Config file doesn't exist at `config_file_path`. Generate default config.
             self.__generate_config_file(config_file_path)
+
+    def __validate_config(self, config_file_contents: str) -> bool:
+        # TODO: Implement configuration validation logic.
+        return True
+
+    def __get_config_version(self, config_file_contents: str) -> str:
+        # TODO: Implement configuration version extraction logic.
+        return "implement"
+
+    def __load_config(self, file_contents: str) -> Configuration:
+        # TODO: Implement configuration loading logic.
+        return Configuration()
+
+    def __migrate_config(self, file_contents: str, file_path: str) -> None:
+        # TODO: Implement config migration logic.
+        pass
+
+
+class Configuration:
+    def __init__(self):
+        self.__config = {}
