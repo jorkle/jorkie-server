@@ -1,10 +1,11 @@
-#!/usr/bin/env python3
+# /usr/bin/env python3
 
 import sys
 import argparse
 
+from jorkieserver.configurator import Configurator
 from jorkieserver.types import CommandOptions, Configuration, Components
-from jorkieserver.logging import LogWriter
+from jorkieserver.logger import LogWriter
 from jorkieserver.constants import (
     APPLICATION_NAME,
     APPLICATION_DESCRIPTION,
@@ -33,8 +34,8 @@ class Server:
         """
 
         self.cli_args = self.__parse_args()
-        self.config = self.__load_config()
         self.log_writer = self.__init_logging()
+        self.config = self.__load_config()
         self.components = self.__init_components()
 
     def __parse_args(self) -> CommandOptions:
@@ -87,12 +88,12 @@ class Server:
         return cli_args
 
     def __load_config(self) -> Configuration:
-        config: Configuration = Configurator(self.log_writer, self.cli_args.config_file)
-        return config
+        config: Configurator = Configurator(self.log_writer, self.cli_args.config_file)
+        return config.get_configuration(self.cli_args.config_file)
 
     def __init_logging(self) -> LogWriter:
         log_writer = LogWriter(
-            self.cmd_opts.log_level, self.cmd_opts.log_file, DEFAULT_LOG_DIR
+            self.cli_args.log_level, self.cli_args.log_file, DEFAULT_LOG_DIR
         )
         log_writer.debug("Logging initialized", "MAIN")
         return log_writer

@@ -1,7 +1,6 @@
-import logging
 import sys
-from logging import Logger
 
+import logging
 from jorkieserver.utils import base64_encode, create_directory
 
 
@@ -16,7 +15,7 @@ class LogWriter:
         self.__log_dir = create_directory(log_dir, "LOGGING")
         self.logger = self.__init_logger()
 
-    def __init_logger(self) -> Logger:
+    def __init_logger(self):
         """
         Initializes the logger with the specified log level and log file.
 
@@ -61,7 +60,7 @@ class LogWriter:
                 file=sys.stderr,
             )
             print(
-                f"FATAL: [COMPONENT: LOGGING] Exception Details (base64 encoded): {base64_encode(str(e), "LOGGING")}",
+                f"FATAL: [COMPONENT: LOGGING] Exception Details (base64 encoded): {str(e)}",
                 file=sys.stderr,
             )
             print(
