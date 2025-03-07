@@ -72,6 +72,10 @@ class Configurator:
                         component="CONFIGURATOR",
                     )
                     # If manual intervention is required, the program exits.
+                    self.__migrate_config(config_file_contents, config_file_path)
+                    config_file_contents = get_file_contents(
+                        config_file_path, self.__log_writer
+                    )
                     configuration: Configuration = self.__load_config(
                         config_file_contents, config_file_path
                     )
@@ -140,6 +144,7 @@ class Configurator:
         api_host: str = yaml_data["api"]["api_host"]
         api_port: int = yaml_data["api"]["api_port"]
         api_key: str = yaml_data["api"]["api_key"]
+        config_version: str = yaml_data["config_version"]
         return Configuration(
             db_host,
             db_port,
@@ -150,6 +155,7 @@ class Configurator:
             api_port,
             api_key,
             config_file_path,
+            config_version,
         )
 
     def __migrate_config(self, file_contents: str, config_file_path: str) -> None:
@@ -168,9 +174,15 @@ class Configurator:
                     #                        yaml_data = self.__migrate_alpha_one_to_alpha_two(yaml_data)
                     #                        config_version = "alpha-two"
                     #                        continue
-                    case "alpha-one":
+                    #                        yaml_data.set()
+                    case "alpha-zero":
+                        yaml_data["config_version"] = "alpha-one"
                         with open(config_file_path, "w") as f:
                             yaml.dump(yaml_data, f)
+                            self.__log_writer.info(
+                                "Configuration migrated to alpha-one",
+                                component="CONFIGURATOR",
+                            )
                             if user_input_required:
                                 self.__log_writer.critical(
                                     f"User intervention required to complete configuration migration. Please verify the configuration contents ({config_file_path}).",

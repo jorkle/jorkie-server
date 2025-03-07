@@ -28,6 +28,7 @@ class Configuration:
         api_port: int,
         api_key: str,
         config_file_path: str,
+        config_version: str,
     ):
         self.db_host = db_host
         self.db_port = db_port
@@ -38,6 +39,7 @@ class Configuration:
         self.api_port = api_port
         self.api_key = api_key
         self.config_file_path = config_file_path
+        self.config_version = config_version
 
 
 class Components:
