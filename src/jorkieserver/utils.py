@@ -3,8 +3,6 @@ import base64
 import sys
 import os
 
-from jorkieserver.logging import LogWriter
-
 
 def file_exists(file_path: str) -> bool:
     """Determines if a file exists.
@@ -41,7 +39,7 @@ def file_writable(file_path: str) -> bool:
         return False
 
 
-def get_file_contents(file_path: str, log_writer: LogWriter) -> str | bool:
+def get_file_contents(file_path: str, log_writer) -> str:
     """Reads the contents of the file at the given path.
     Returns the contnets of the file if it exists, otherwise returns False.
 
@@ -58,6 +56,7 @@ def get_file_contents(file_path: str, log_writer: LogWriter) -> str | bool:
             return file.read()
     except Exception:
         log_writer.critical("Failed to read file contents.", component="CONFIGURATOR")
+        sys.exit(1)
 
 
 def base64_encode(data: str, component: str) -> str:
@@ -172,17 +171,15 @@ def create_directory(dir: str, component: str) -> str:
     return dir
 
 
-def prompt_user(question: str, timeout: int) -> bool:
+def prompt_user(question: str) -> bool:
     print(question)
     answer: str = input("Answer (y,n)")
-    while True and elapsed < timeout:
+    while True:
         if len(answer) == 0:
             continue
         if answer[0].lower() == "y":
             return True
         elif answer[0].lower() == "n":
             return False
-    if len(answer) == 0:
-        continue
-    if answer[0].lower() == "y":
-        return True
+        else:
+            continue

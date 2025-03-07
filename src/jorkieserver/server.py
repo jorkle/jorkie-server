@@ -32,7 +32,7 @@ class Server:
         and initializes the asynchranous sub-components by calling `__init_components()`.
         """
 
-        self.cmd_opts = self.__parse_args()
+        self.cli_args = self.__parse_args()
         self.config = self.__load_config()
         self.log_writer = self.__init_logging()
         self.components = self.__init_components()
@@ -87,7 +87,8 @@ class Server:
         return cli_args
 
     def __load_config(self) -> Configuration:
-        return Configuration()  # TODO: Implement configuration functionality
+        config: Configuration = Configurator(self.log_writer, self.cli_args.config_file)
+        return config
 
     def __init_logging(self) -> LogWriter:
         log_writer = LogWriter(

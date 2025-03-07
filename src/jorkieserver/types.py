@@ -18,12 +18,14 @@ class Configuration:
     """
 
     def __init__(self):
+        self.db_host = None
+        self.db_port = None
+        self.db_name = None
+        self.db_user = None
+        self.db_password = None
         self.api_host = None
         self.api_port = None
-        self.api_version = None
         self.api_key = None
-        self.api_secret = None
-        self.api_timeout = None
         self.log_level = None
         self.log_file = None
         self.config_file = None

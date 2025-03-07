@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from jorkieserver import server
+import jorkieserver.server as server
 
 
 if __name__ == "__main__":

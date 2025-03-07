@@ -1,1 +1,1 @@
-from jorkieserver import server
+from jorkieserver import *
