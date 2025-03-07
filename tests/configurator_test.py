@@ -1,10 +1,12 @@
 from _pytest.tmpdir import tmp_path_factory
 import logging
 import pytest
+from io import StringIO
 from unittest.mock import MagicMock, patch
 from jorkieserver.configurator import Configurator
 from jorkieserver.logger import LogWriter
 from jorkieserver.types import Configuration
+from jorkieserver import utils
 
 
 @pytest.fixture(scope="session")
@@ -92,3 +94,41 @@ def test_config_file_valid_and_old(log_writer, get_fake_config_valid_and_old, ca
         configuration = configurator.get_configuration(get_fake_config_valid_and_old)
         assert "Configuration migrated to alpha-one" in caplog.text
         assert configuration.config_version == "alpha-one"
+
+
+@pytest.fixture(scope="session")
+def get_fake_config_invalid(temporary_log_dir):
+    test_yaml_data = """api:
+  a_host: 127.0.0.1
+  api_key: SECRET_KEY
+  apirt: 8000
+config_version: alpha-zer
+dabase:
+  db_host: 127.0.0.1
+  db_name: jorkieserver
+  db_password: TestPassword123
+  db_port: 3306
+  db_user: jorkie
+"""
+    fake_config_file_valid = f"{temporary_log_dir}/test_config_valid.yaml"
+    with open(fake_config_file_valid, "w") as f:
+        f.write(test_yaml_data)
+    return fake_config_file_valid
+
+
+@patch.object(utils, "prompt_user", return_value=True)
+def test_config_file_invalid_regenerate(
+    prompt_user, log_writer, get_fake_config_invalid, caplog
+):
+    with caplog.at_level(logging.DEBUG):
+        with pytest.raises(SystemExit) as e:
+            caplog.set_level(logging.DEBUG)
+            configurator = Configurator(log_writer, get_fake_config_invalid)
+            with (
+                patch("sys.stdin", StringIO("Y")),
+                patch("sys.stdout", new_callable=StringIO) as mocked_out,
+            ):
+                configuration = configurator.get_configuration(get_fake_config_invalid)
+                assert "Configuration file generated." in caplog.text
+                assert e.type is SystemExit
+                assert e.value.code == 0
